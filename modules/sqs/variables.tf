@@ -3,7 +3,7 @@ variable "vpc_id" {
 }
 
 variable "private_subnet_ids" {
-  type = list
+  type = list(any)
 }
 
 variable "stack_name" {
@@ -11,5 +11,5 @@ variable "stack_name" {
 }
 
 variable "security_group_ids" {
-  type = list
+  type = list(any)
 }

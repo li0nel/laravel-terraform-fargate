@@ -1,3 +1,3 @@
 output "aws_ssm_parameter" {
-    value = aws_ssm_parameter.secret
+  value = aws_ssm_parameter.secret
 }

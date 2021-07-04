@@ -29,8 +29,8 @@ module "vpc" {
 }
 
 module "iam" {
-  source = "./modules/iam"
-  stack_name    = local.stack_name
+  source     = "./modules/iam"
+  stack_name = local.stack_name
 }
 
 module "aurora" {
@@ -58,16 +58,16 @@ module "elasticache" {
 }
 
 module "elasticsearch" {
-  source     = "./modules/elasticsearch"
-  stack_name = local.stack_name
-  vpc_id     = module.vpc.vpc.id
+  source             = "./modules/elasticsearch"
+  stack_name         = local.stack_name
+  vpc_id             = module.vpc.vpc.id
   private_subnet_ids = module.vpc.private_subnets.*.id
 }
 
 module "sqs" {
-  source     = "./modules/sqs"
-  stack_name = local.stack_name
-  vpc_id     = module.vpc.vpc.id
+  source             = "./modules/sqs"
+  stack_name         = local.stack_name
+  vpc_id             = module.vpc.vpc.id
   private_subnet_ids = module.vpc.private_subnets.*.id
   security_group_ids = [module.ecs.aws_security_group.id]
 }
@@ -92,15 +92,13 @@ module "ecs" {
   # certificate_arn            = module.acm.certificate_arn
   # hostname                   = local.hostname
 
-  aurora_endpoint            = module.aurora.aurora_cluster.endpoint
-  aurora_port                = module.aurora.aurora_cluster.port
-  aurora_db_name             = module.aurora.aurora_cluster.database_name
-  aurora_db_username         = module.aurora.aurora_cluster.master_username
-  aurora_master_password     = module.aurora.rds_master_password.result
-  ecr_laravel_repository_uri = module.ecr.laravel_repository_uri
-  ecr_nginx_repository_uri   = module.ecr.nginx_repository_uri
-  s3_bucket_name             = module.s3.bucket.id
-  s3_bucket_arn              = module.s3.bucket.arn
+  aurora = module.aurora.aws_rds_cluster
 
-  // TODO Redis params
+  ecr = module.ecr
+
+  s3          = module.s3.aws_s3_bucket
+  sqs         = module.sqs.aws_sqs_queue
+  elasticache = module.elasticache.aws_elasticache_cluster
+
+  account_id = data.aws_caller_identity.current.account_id
 }

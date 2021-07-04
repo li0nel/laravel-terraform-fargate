@@ -95,9 +95,9 @@ terraform apply
 ```
 aws ecr get-login-password --region $(terraform output region | tr -d '"') | docker login --username AWS --password-stdin $(terraform output account_id | tr -d '"').dkr.ecr.$(terraform output region | tr -d '"').amazonaws.com
 
-docker pull li0nel/laravel-test && docker tag li0nel/laravel-test $(terraform output -json | jq '.ecr.value.laravel_repository_uri' | tr -d '"') && docker push $(terraform output -json | jq '.ecr.value.laravel_repository_uri' | tr -d '"')
+docker pull li0nel/laravel-test && docker tag li0nel/laravel-test $(terraform output -json | jq '.ecr.value.aws_ecr_repository_laravel.repository_url' | tr -d '"') && docker push $(terraform output -json | jq '.ecr.value.aws_ecr_repository_laravel.repository_url' | tr -d '"')
 
-docker pull li0nel/nginx && docker tag li0nel/nginx $(terraform output -json | jq '.ecr.value.nginx_repository_uri' | tr -d '"') && docker push $(terraform output -json | jq '.ecr.value.nginx_repository_uri' | tr -d '"')
+docker pull li0nel/nginx && docker tag li0nel/nginx $(terraform output -json | jq '.ecr.value.aws_ecr_repository_nginx.repository_url' | tr -d '"') && docker push $(terraform output -json | jq '.ecr.value.aws_ecr_repository_nginx.repository_url' | tr -d '"')
 ```
 
 ### SSH tunnelling into the database through the EC2 bastion (optional - only to access the database manually)
@@ -142,16 +142,28 @@ You will need the below environment variables in your CI/CD project to redeploy 
 ## 4. Test your infrastructure code
 
 // Test Laravel is up
+
 // Test Laravel workers are running -> workers are writing in the database
+
 // Test Laravel scheduler is running -> scheduler is creating recurrent jobs picked up by workers
+
 // Test Laravel can reach S3 -> URL that post/read file
+
 // Test Laravel can reach MySQL -> select 1
+
 // Test Laravel can reach Redis -> used as cache driver
+
 // Test Laravel can reach ElasticSearch
+
 // Test Laravel can reach SQS -> used as queue driver
+
 // Test Laravel can be passed SSM secrets -> echo all env vars
 
+
 // queue driver, db driver, cache driver, file driver
+
 // store jobs in db?
+
 // page that dumps env or phpinfo
+
 // page that posts a random file to S3

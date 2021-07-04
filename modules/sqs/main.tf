@@ -1,5 +1,5 @@
 resource "aws_sqs_queue" "queue" {
-    name = var.stack_name
+  name = var.stack_name
 }
 
 resource "aws_vpc_endpoint" "sqs" {

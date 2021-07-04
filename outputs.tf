@@ -11,7 +11,7 @@ output "region" {
 }
 
 output "iam" {
-  value = module.iam
+  value     = module.iam
   sensitive = true
 }
 
@@ -40,7 +40,7 @@ output "vpc" {
 }
 
 output "aurora" {
-  value = module.aurora
+  value     = module.aurora
   sensitive = true
 }
 
@@ -50,4 +50,8 @@ output "elasticache" {
 
 output "elasticsearch" {
   value = module.elasticsearch
+}
+
+output "sqs" {
+  value = module.sqs
 }

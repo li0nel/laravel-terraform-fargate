@@ -1,7 +1,7 @@
-output "laravel_repository_uri" {
-  value = aws_ecr_repository.laravel.repository_url
+output "aws_ecr_repository_laravel" {
+  value = aws_ecr_repository.laravel
 }
 
-output "nginx_repository_uri" {
-  value = aws_ecr_repository.nginx.repository_url
+output "aws_ecr_repository_nginx" {
+  value = aws_ecr_repository.nginx
 }

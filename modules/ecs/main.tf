@@ -128,8 +128,8 @@ data "aws_iam_policy_document" "s3_data_bucket_policy" {
     ]
 
     resources = [
-      var.s3_bucket_arn,
-      "${var.s3_bucket_arn}/*"
+      var.s3.arn,
+      "${var.s3.arn}/*"
     ]
   }
 }
@@ -171,24 +171,7 @@ resource "aws_ecs_task_definition" "app" {
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   task_role_arn            = aws_iam_role.ecs_task_execution_role.arn
 
-  container_definitions = templatefile("${path.module}/task-definitions.json", {
-    log_group                  = aws_cloudwatch_log_group.logs.name,
-    aws_region                 = data.aws_region.current.name
-    ecr_laravel_repository_uri = var.ecr_laravel_repository_uri
-    ecr_nginx_repository_uri   = var.ecr_nginx_repository_uri
-    env_vars = {
-      LOG_CHANNEL   = "stderr"
-      APP_DEBUG     = false
-      APP_URL       = "http://${aws_alb.main.dns_name}"
-      DB_CONNECTION = "mysql"
-      DB_HOST       = var.aurora_endpoint
-      DB_PORT       = var.aurora_port
-      DB_DATABASE   = var.aurora_db_name
-      DB_USERNAME   = var.aurora_db_username
-      DB_PASSWORD   = var.aurora_master_password
-      BUCKET_NAME   = var.s3_bucket_name
-    }
-  })
+  container_definitions = templatefile("${path.module}/task-definitions.json", local.task_definition_template)
 }
 
 resource "aws_cloudwatch_log_group" "logs" {
@@ -234,23 +217,7 @@ resource "aws_ecs_task_definition" "worker" {
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   task_role_arn            = aws_iam_role.ecs_task_execution_role.arn
 
-  container_definitions = templatefile("${path.module}/task-definitions-workers.json", {
-    log_group                  = aws_cloudwatch_log_group.logs.name,
-    aws_region                 = data.aws_region.current.name
-    ecr_laravel_repository_uri = var.ecr_laravel_repository_uri
-    env_vars = {
-      LOG_CHANNEL   = "stderr"
-      APP_DEBUG     = false
-      APP_URL       = "http://${aws_alb.main.dns_name}"
-      DB_CONNECTION = "mysql"
-      DB_HOST       = var.aurora_endpoint
-      DB_PORT       = var.aurora_port
-      DB_DATABASE   = var.aurora_db_name
-      DB_USERNAME   = var.aurora_db_username
-      DB_PASSWORD   = var.aurora_master_password
-      BUCKET_NAME   = var.s3_bucket_name
-    }
-  })
+  container_definitions = templatefile("${path.module}/task-definitions-workers.json", local.task_definition_template)
 }
 
 resource "aws_ecs_service" "worker" {
@@ -283,23 +250,7 @@ resource "aws_ecs_task_definition" "cron" {
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   task_role_arn            = aws_iam_role.ecs_task_execution_role.arn
 
-  container_definitions = templatefile("${path.module}/task-definitions-cron.json", {
-    log_group                  = aws_cloudwatch_log_group.logs.name,
-    aws_region                 = data.aws_region.current.name
-    ecr_laravel_repository_uri = var.ecr_laravel_repository_uri
-    env_vars = {
-      LOG_CHANNEL   = "stderr"
-      APP_DEBUG     = false
-      APP_URL       = "http://${aws_alb.main.dns_name}"
-      DB_CONNECTION = "mysql"
-      DB_HOST       = var.aurora_endpoint
-      DB_PORT       = var.aurora_port
-      DB_DATABASE   = var.aurora_db_name
-      DB_USERNAME   = var.aurora_db_username
-      DB_PASSWORD   = var.aurora_master_password
-      BUCKET_NAME   = var.s3_bucket_name
-    }
-  })
+  container_definitions = templatefile("${path.module}/task-definitions-cron.json", local.task_definition_template)
 }
 
 resource "aws_ecs_service" "cron" {
@@ -321,3 +272,37 @@ resource "aws_ecs_service" "cron" {
     ]
   }
 }
+
+resource "aws_appautoscaling_target" "target" {
+  max_capacity = var.autoscaling_max
+  min_capacity = var.desired_count
+  resource_id  = "service/${aws_ecs_cluster.main.name}/${aws_ecs_service.main.name}"
+  # role_arn = aws_iam_service_linked_role.autoscale.arn
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+}
+
+
+resource "aws_appautoscaling_policy" "policy" {
+  name               = "autoscale"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.target.resource_id
+  scalable_dimension = aws_appautoscaling_target.target.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.target.service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    target_value       = var.autoscaling_target
+    scale_in_cooldown  = 30
+    scale_out_cooldown = 120
+
+    predefined_metric_specification {
+      predefined_metric_type = var.autoscaling_type
+      # resource_label = "${aws_alb.main.arn_suffix}/${aws_alb_target_group.app.arn_suffix}"
+    }
+  }
+}
+
+# resource "aws_iam_service_linked_role" "autoscale" {
+#   aws_service_name = "ecs.application-autoscaling.amazonaws.com"
+# }
+

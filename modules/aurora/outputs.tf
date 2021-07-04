@@ -2,7 +2,7 @@ output "aurora_subnet_group" {
   value = aws_db_subnet_group.aurora_subnet_group
 }
 
-output "aurora_cluster" {
+output "aws_rds_cluster" {
   value = aws_rds_cluster.aurora_cluster
 }
 
@@ -18,7 +18,7 @@ output "final_snapshot_id" {
   value = random_string.final_snapshot_id
 }
 
-output "rds_master_password" {
-  value     = random_password.rds_master_password
-  sensitive = true
-}
+# output "rds_master_password" {
+#   value     = random_password.rds_master_password
+#   sensitive = true
+# }
