@@ -1,0 +1,34 @@
+[
+  {
+    "cpu": 512,
+    "image": "${ecr_laravel_repository_uri}:latest",
+    "memory": 1024,
+    "name": "laravel",
+    "networkMode": "awsvpc",
+    "command": [
+      "/bin/sh",
+      "-c",
+      "php artisan queue:work"
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${log_group}",
+        "awslogs-region": "${aws_region}",
+        "awslogs-stream-prefix": "laravel-worker"
+      }
+    },
+    "environment": [
+%{ for key, value in env_vars ~}
+      {
+        "name": "${key}",
+        "value": "${value}"
+      },
+%{ endfor ~}
+      {
+        "name": "dummy",
+        "value": "env_var"
+      }    
+    ]  
+  }
+]

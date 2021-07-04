@@ -1,0 +1,49 @@
+[
+  {
+    "cpu": 512,
+    "image": "${ecr_nginx_repository_uri}:latest",
+    "memory": 1024,
+    "name": "web",
+    "networkMode": "awsvpc",
+    "portMappings": [
+      {
+        "containerPort": 80
+      }
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${log_group}",
+        "awslogs-region": "${aws_region}",
+        "awslogs-stream-prefix": "nginx"
+      }
+    }
+  },
+  {
+    "cpu": 512,
+    "image": "${ecr_laravel_repository_uri}:latest",
+    "memory": 1024,
+    "name": "laravel",
+    "networkMode": "awsvpc",
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${log_group}",
+        "awslogs-region": "${aws_region}",
+        "awslogs-stream-prefix": "laravel"
+      }
+    },
+    "environment": [
+%{ for key, value in env_vars ~}
+      {
+        "name": "${key}",
+        "value": "${value}"
+      },
+%{ endfor ~}
+      {
+        "name": "dummy",
+        "value": "env_var"
+      }    
+    ]  
+  }
+]

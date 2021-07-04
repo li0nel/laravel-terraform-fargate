@@ -1,0 +1,34 @@
+[
+  {
+    "cpu": 256,
+    "image": "${ecr_laravel_repository_uri}:latest",
+    "memory": 512,
+    "name": "laravel-cron",
+    "networkMode": "awsvpc",
+    "command": [
+      "/bin/bash",
+      "-c",
+      "env /bin/bash -o posix -c 'export -p' > /etc/cron.d/project_env.sh && chmod +x /etc/cron.d/project_env.sh && crontab /etc/cron.d/artisan-schedule-run && cron && tail -f /var/log/cron.log"
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-group": "${log_group}",
+        "awslogs-region": "${aws_region}",
+        "awslogs-stream-prefix": "laravel-cron"
+      }
+    },
+    "environment": [
+%{ for key, value in env_vars ~}
+      {
+        "name": "${key}",
+        "value": "${value}"
+      },
+%{ endfor ~}
+      {
+        "name": "dummy",
+        "value": "env_var"
+      }    
+    ]  
+  }
+]
