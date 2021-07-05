@@ -103,8 +103,6 @@ resource "aws_ecs_cluster" "main" {
   name = var.stack_name
 }
 
-data "aws_region" "current" {}
-
 # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_execution_IAM_role.html
 resource "aws_iam_role" "ecs_task_execution_role" {
   name               = "ecs_task_execution_role-${var.stack_name}"
@@ -121,8 +119,8 @@ data "aws_iam_policy_document" "s3_data_bucket_policy" {
     ]
 
     resources = [
-      var.s3_bucket_arn,
-      "${var.s3_bucket_arn}/*"
+      var.aws_s3_bucket.arn,
+      "${var.aws_s3_bucket.arn}/*"
     ]
   }
 }

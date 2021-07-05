@@ -39,12 +39,12 @@ variable "ecr_nginx_repository_uri" {
   type = string
 }
 
-variable "s3_bucket_name" {
-  type = string
-}
-
-variable "s3_bucket_arn" {
-  type = string
+variable "aws_s3_bucket" {
+  type = object({
+    id                 = string
+    arn                = string
+    bucket_domain_name = string
+  })
 }
 
 variable "autoscaling_type" {
@@ -63,13 +63,28 @@ variable "autoscaling_max" {
   default = 5
 }
 
-variable "aurora" {
+variable "aws_rds_cluster" {
   type = object({
     endpoint        = string
     port            = number
     database_name   = string
     master_username = string
     master_password = string
+  })
+}
+
+variable "aws_sqs_queue" {
+  type = object({
+    name = string
+  })
+}
+
+variable "aws_elasticache_cluster" {
+  type = object({
+    cache_nodes = list(object({
+      address = string
+      port    = number
+    }))
   })
 }
 
