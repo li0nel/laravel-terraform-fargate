@@ -269,10 +269,10 @@ resource "aws_ecs_service" "cron" {
 resource "aws_appautoscaling_target" "target" {
   max_capacity = var.autoscaling_max
   min_capacity = var.desired_count
-  resource_id = "service/${aws_ecs_cluster.main.name}/${aws_ecs_service.main.name}"
+  resource_id  = "service/${aws_ecs_cluster.main.name}/${aws_ecs_service.main.name}"
   # role_arn = aws_iam_service_linked_role.autoscale.arn
   scalable_dimension = "ecs:service:DesiredCount"
-  service_namespace = "ecs"
+  service_namespace  = "ecs"
 }
 
 
