@@ -51,3 +51,7 @@ output "elasticache" {
 output "elasticsearch" {
   value = module.elasticsearch
 }
+
+output "sqs" {
+  value = module.sqs
+}
