@@ -31,26 +31,6 @@ variable "role" {
 #   type = string
 # }
 
-variable "aurora_endpoint" {
-  type = string
-}
-
-variable "aurora_port" {
-  type = number
-}
-
-variable "aurora_db_name" {
-  type = string
-}
-
-variable "aurora_db_username" {
-  type = string
-}
-
-variable "aurora_master_password" {
-  type = string
-}
-
 variable "ecr_laravel_repository_uri" {
   type = string
 }
@@ -78,8 +58,18 @@ variable "autoscaling_target" {
   default = 60
 }
 
-
 variable "autoscaling_max" {
   type    = number
   default = 5
 }
+
+variable "aurora" {
+  type = object({
+    endpoint        = string
+    port            = number
+    database_name   = string
+    master_username = string
+    master_password = string
+  })
+}
+

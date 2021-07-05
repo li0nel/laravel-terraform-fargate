@@ -92,11 +92,14 @@ module "ecs" {
   # certificate_arn            = module.acm.certificate_arn
   # hostname                   = local.hostname
 
-  aurora_endpoint            = module.aurora.aurora_cluster.endpoint
-  aurora_port                = module.aurora.aurora_cluster.port
-  aurora_db_name             = module.aurora.aurora_cluster.database_name
-  aurora_db_username         = module.aurora.aurora_cluster.master_username
-  aurora_master_password     = module.aurora.rds_master_password.result
+  # aurora_endpoint            = module.aurora.aurora_cluster.endpoint
+  # aurora_port                = module.aurora.aurora_cluster.port
+  # aurora_db_name             = module.aurora.aurora_cluster.database_name
+  # aurora_db_username         = module.aurora.aurora_cluster.master_username
+  # aurora_master_password     = module.aurora.rds_master_password.result
+
+  aurora = module.aurora.aws_rds_cluster
+
   ecr_laravel_repository_uri = module.ecr.laravel_repository_uri
   ecr_nginx_repository_uri   = module.ecr.nginx_repository_uri
   s3_bucket_name             = module.s3.bucket.id
