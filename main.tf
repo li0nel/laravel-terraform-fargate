@@ -29,8 +29,8 @@ module "vpc" {
 }
 
 module "iam" {
-  source = "./modules/iam"
-  stack_name    = local.stack_name
+  source     = "./modules/iam"
+  stack_name = local.stack_name
 }
 
 module "aurora" {
@@ -58,16 +58,16 @@ module "elasticache" {
 }
 
 module "elasticsearch" {
-  source     = "./modules/elasticsearch"
-  stack_name = local.stack_name
-  vpc_id     = module.vpc.vpc.id
+  source             = "./modules/elasticsearch"
+  stack_name         = local.stack_name
+  vpc_id             = module.vpc.vpc.id
   private_subnet_ids = module.vpc.private_subnets.*.id
 }
 
 module "sqs" {
-  source     = "./modules/sqs"
-  stack_name = local.stack_name
-  vpc_id     = module.vpc.vpc.id
+  source             = "./modules/sqs"
+  stack_name         = local.stack_name
+  vpc_id             = module.vpc.vpc.id
   private_subnet_ids = module.vpc.private_subnets.*.id
   security_group_ids = [module.ecs.aws_security_group.id]
 }

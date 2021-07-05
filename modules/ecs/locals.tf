@@ -17,4 +17,4 @@ locals {
       BUCKET_NAME   = var.s3_bucket_name
     }
   }
-} 
+}

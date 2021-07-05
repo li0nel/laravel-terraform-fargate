@@ -1,5 +1,5 @@
 provider "aws" {
-  region  = var.aws_region
+  region = var.aws_region
 
   default_tags {
     tags = {
@@ -9,8 +9,8 @@ provider "aws" {
 }
 
 provider "aws" {
-  region  = "us-east-1"
-  alias   = "useast1"
+  region = "us-east-1"
+  alias  = "useast1"
 
   default_tags {
     tags = {
@@ -29,8 +29,8 @@ terraform {
 
   required_providers {
     aws = {
-      version = "~> 3.47"
-      configuration_aliases = [ aws.useast1 ]
+      version               = "~> 3.47"
+      configuration_aliases = [aws.useast1]
     }
   }
 

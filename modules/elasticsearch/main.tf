@@ -40,19 +40,19 @@ resource "aws_elasticsearch_domain" "es" {
     volume_size = "10"
   }
 
-#   access_policies = <<CONFIG
-# {
-#     "Version": "2012-10-17",
-#     "Statement": [
-#         {
-#             "Action": "es:*",
-#             "Principal": "*",
-#             "Effect": "Allow",
-#             "Resource": "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/${var.stack_name}/*"
-#         }
-#     ]
-# }
-# CONFIG
+  #   access_policies = <<CONFIG
+  # {
+  #     "Version": "2012-10-17",
+  #     "Statement": [
+  #         {
+  #             "Action": "es:*",
+  #             "Principal": "*",
+  #             "Effect": "Allow",
+  #             "Resource": "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/${var.stack_name}/*"
+  #         }
+  #     ]
+  # }
+  # CONFIG
 
   log_publishing_options {
     cloudwatch_log_group_arn = aws_cloudwatch_log_group.log_group.arn
