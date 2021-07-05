@@ -55,6 +55,10 @@ variable "autoscaling_max" {
   default = 5
 }
 
+variable "ecr_laravel_repository_uri" {
+  type = string
+}
+
 variable "s3" {
   type = object({
     id                 = string
@@ -106,3 +110,19 @@ variable "ecr" {
 variable "account_id" {
   type = string
 }
+
+variable "autoscaling_max" {
+  type    = number
+  default = 5
+}
+
+variable "aurora" {
+  type = object({
+    endpoint        = string
+    port            = number
+    database_name   = string
+    master_username = string
+    master_password = string
+  })
+}
+
