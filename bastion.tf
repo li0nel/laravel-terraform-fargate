@@ -1,9 +1,9 @@
-variable "public_ips" { 
-    type = map 
+variable "public_ips" {
+  type = map(any)
 }
 
 locals {
-  use_eip   = length(lookup(var.public_ips, terraform.workspace, "")) > 0
+  use_eip = length(lookup(var.public_ips, terraform.workspace, "")) > 0
 }
 
 data "aws_eip" "ec2_ip" {

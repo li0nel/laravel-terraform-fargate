@@ -60,18 +60,20 @@ module "elasticache" {
 }
 
 module "elasticsearch" {
-  source     = "./modules/elasticsearch"
-  stack_name = local.stack_name
-  vpc_id     = module.vpc.vpc.id
-  subnet_ids = module.vpc.private_subnets.*.id
+  source       = "./modules/elasticsearch"
+  stack_name   = local.stack_name
+  vpc_id       = module.vpc.vpc.id
+  subnet_ids   = module.vpc.private_subnets.*.id
+  aws_iam_role = module.ecs.aws_iam_role
 }
 
 module "sqs" {
   source             = "./modules/sqs"
   stack_name         = local.stack_name
   vpc_id             = module.vpc.vpc.id
-  private_subnet_ids = module.vpc.private_subnets.*.id
+  subnet_ids         = module.vpc.public_subnets.*.id
   security_group_ids = [module.ecs.aws_security_group.id]
+  aws_iam_role       = module.ecs.aws_iam_role
 }
 
 module "ssm" {

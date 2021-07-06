@@ -144,9 +144,7 @@ data "aws_iam_policy_document" "policy" {
     effect = "Allow"
 
     actions = [
-      "sqs:DeleteMessage",
-      "sqs:ReceiveMessage",
-      "sqs:SendMessage"
+      "sqs:*"
     ]
 
     resources = [

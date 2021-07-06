@@ -3,5 +3,5 @@ project_name = "laravel"
 # domain  = "laravelaws.com"
 public_ips = {
   production = ""
-  default = ""
+  default    = ""
 }

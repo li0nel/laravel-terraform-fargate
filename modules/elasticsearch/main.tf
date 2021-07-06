@@ -1,6 +1,6 @@
 resource "aws_security_group" "es" {
-  name        = "elasticsearch-${var.stack_name}"
-  vpc_id      = data.aws_vpc.selected.id
+  name   = "elasticsearch-${var.stack_name}"
+  vpc_id = data.aws_vpc.selected.id
 
   ingress {
     from_port = 443
@@ -45,7 +45,11 @@ resource "aws_elasticsearch_domain" "es" {
     "Statement": [
         {
             "Action": "es:*",
-            "Principal": "*",
+            "Principal": {
+              "AWS": [
+                  "${var.aws_iam_role.arn}"
+              ]
+            },
             "Effect": "Allow",
             "Resource": "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/${var.stack_name}/*"
         }

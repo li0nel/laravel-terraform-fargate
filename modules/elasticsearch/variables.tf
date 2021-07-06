@@ -9,3 +9,9 @@ variable "subnet_ids" {
 variable "stack_name" {
   type = string
 }
+
+variable "aws_iam_role" {
+  type = object({
+    arn = string
+  })
+}

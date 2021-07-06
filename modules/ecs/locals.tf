@@ -22,7 +22,7 @@ locals {
     //     ],
     env_vars = {
       LOG_CHANNEL = "stderr"
-      APP_DEBUG   = false
+      APP_DEBUG   = true
       APP_URL     = "http://${aws_alb.main.dns_name}"
 
       DB_CONNECTION = "mysql"
@@ -46,8 +46,8 @@ locals {
       REDIS_HOST   = var.aws_elasticache_cluster.cache_nodes[0].address
       REDIS_PORT   = var.aws_elasticache_cluster.cache_nodes[0].port
 
-      ELASTICSEARCH_HOST = var.aws_elasticsearch_domain.endpoint
-      ELASTICSEARCH_PORT = 443
+      ELASTICSEARCH_HOST   = var.aws_elasticsearch_domain.endpoint
+      ELASTICSEARCH_PORT   = 443
       ELASTICSEARCH_SCHEME = "https"
     }
   }

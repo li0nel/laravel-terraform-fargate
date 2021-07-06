@@ -2,7 +2,7 @@ variable "vpc_id" {
   type = string
 }
 
-variable "private_subnet_ids" {
+variable "subnet_ids" {
   type = list(any)
 }
 
@@ -12,4 +12,10 @@ variable "stack_name" {
 
 variable "security_group_ids" {
   type = list(any)
+}
+
+variable "aws_iam_role" {
+  type = object({
+    arn = string
+  })
 }
