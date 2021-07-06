@@ -64,7 +64,7 @@ module "elasticsearch" {
   stack_name   = local.stack_name
   vpc_id       = module.vpc.vpc.id
   subnet_ids   = module.vpc.private_subnets.*.id
-  aws_iam_role = module.ecs.aws_iam_role
+  # aws_iam_role = module.ecs.aws_iam_role
 }
 
 module "sqs" {
