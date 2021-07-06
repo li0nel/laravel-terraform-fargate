@@ -16,7 +16,6 @@
 | `aws_iam_role` |  Roles needed for our compute instances to access various resources, such as S3 or ECR | yes | DONE |
 | `aws_rds_cluster` |  Our MySQL database | yes | DONE |
 | Auto-Scaling |  The ability for our clusters and services to automatically instantiate more Laravel frontend (or workers) based on CPU usage | no | DONE for frontend |
-| Laravel Workers & Cron |  Self explanatory | yes | DONE |
 | `Dockerfile` |  Our PHP FPM configuration | yes | DONE |
 | `Dockerfile-nginx` |  Our reverse proxy configuration | yes | DONE |
 | `aws_elasticache_cluster` | Our Redis cluster for caching | no | DONE |
@@ -145,12 +144,12 @@ You will need the below environment variables in your CI/CD project to redeploy 
 ## 4. Test your infrastructure code
 
 - Test Laravel is up DONE
-- Test Laravel workers are running -> test workers are picking jobs from SQS ; worker trying to connect to Redis?? :warning:
-- Test Laravel scheduler is running -> test scheduler is posting new jobs to SQS TODO
+- Test Laravel workers are running -> see test SQS ; worker trying to connect to Redis?? :warning:
+- Test Laravel scheduler is running -> see test SQS
 - Test Laravel can reach S3 -> test upload S3 object DONE
 - Test Laravel can reach MySQL -> migrations are running on container boot DONE
-- Test Laravel can reach Redis -> test Cache facade TIMEOUT :warning:
-- Test Laravel can reach ElasticSearch -> test simple ES query TODO
-- Test Laravel can reach SQS -> test by posting jobs to SQS TODO
+- Test Laravel can reach Redis -> Elasticache TIMEOUT :warning:
+- Test Laravel can reach ElasticSearch -> ElasticSearch TIMEOUT :warning:
+- Test Laravel can reach SQS -> test SQS TODO :warning:
 - Test Laravel can be passed SSM secrets -> test secrets are passed as env vars 403 ERROR :warning:
-- Test Laravel front-end autoscaling
+- Test Laravel front-end autoscaling -> out of scope
