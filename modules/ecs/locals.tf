@@ -47,6 +47,8 @@ locals {
       REDIS_PORT   = var.aws_elasticache_cluster.cache_nodes[0].port
 
       ELASTICSEARCH_HOST = var.aws_elasticsearch_domain.endpoint
+      ELASTICSEARCH_PORT = 443
+      ELASTICSEARCH_SCHEME = "https"
     }
   }
 }
