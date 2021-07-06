@@ -19,12 +19,12 @@
 | Laravel Workers & Cron |  Self explanatory | yes | DONE |
 | `Dockerfile` |  Our PHP FPM configuration | yes | DONE |
 | `Dockerfile-nginx` |  Our reverse proxy configuration | yes | DONE |
-| `aws_elasticache_cluster` | Our Redis cluster | no | DONE |
+| `aws_elasticache_cluster` | Our Redis cluster for caching | no | DONE |
 | `aws_elasticsearch_domain` | Our managed ElasticSearch instance | no | DONE |
 | `aws_sqs_queue` | Our Laravel queue | no | DONE |
 | `aws_ssm_parameter` | Third party secrets in a managed vault | no | DONE |
 | `aws_cloudwatch_dashboard` | Cloudwatch dashboard | no | TODO |
-| `aws_s3_bucket` | Example S3 bucket for  | no | DONE |
+| `aws_s3_bucket` | Example S3 bucket for the File driver | no | DONE |
 | `aws_cloudfront_distribution` | A CloudFront distribution | no | Coming soon... |
 
 ## 1. Create an IAM User for Terraform in the AWS console
@@ -88,6 +88,9 @@ export TF_VAR_project_name=$PROJECT_NAME
 terraform init -backend-config="bucket=$BUCKET_NAME"
 
 terraform apply
+
+// Get your ALB URL
+terraform output -json | jq '.ecs.value.ecs_alb_hostname' | tr -d '"'
 ```
 
 ### Build and deploy your Docker images manually (optional - only if you don't use a CD pipeline)
@@ -141,17 +144,13 @@ You will need the below environment variables in your CI/CD project to redeploy 
 
 ## 4. Test your infrastructure code
 
-// Test Laravel is up
-// Test Laravel workers are running -> workers are writing in the database
-// Test Laravel scheduler is running -> scheduler is creating recurrent jobs picked up by workers
-// Test Laravel can reach S3 -> URL that post/read file
-// Test Laravel can reach MySQL -> select 1
-// Test Laravel can reach Redis -> used as cache driver
-// Test Laravel can reach ElasticSearch
-// Test Laravel can reach SQS -> used as queue driver
-// Test Laravel can be passed SSM secrets -> echo all env vars
-
-// queue driver, db driver, cache driver, file driver
-// store jobs in db?
-// page that dumps env or phpinfo
-// page that posts a random file to S3
+// Test Laravel is up DONE
+// Test Laravel workers are running -> test workers are picking jobs from SQS ; worker trying to connect to Redis??
+// Test Laravel scheduler is running -> test scheduler is posting new jobs to SQS TODO
+// Test Laravel can reach S3 -> test upload S3 object DONE
+// Test Laravel can reach MySQL -> migrations are running on container boot DONE
+// Test Laravel can reach Redis -> test Cache facade TIMEOUT
+// Test Laravel can reach ElasticSearch -> test simple ES query TODO
+// Test Laravel can reach SQS -> test by posting jobs to SQS TODO
+// Test Laravel can be passed SSM secrets -> test secrets are passed as env vars 403 ERROR
+// Test Laravel front-end autoscaling

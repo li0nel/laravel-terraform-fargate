@@ -109,7 +109,7 @@ resource "aws_iam_role" "ecs_task_execution_role" {
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }
 
-data "aws_iam_policy_document" "s3_data_bucket_policy" {
+data "aws_iam_policy_document" "policy" {
   statement {
     sid    = ""
     effect = "Allow"
@@ -123,17 +123,46 @@ data "aws_iam_policy_document" "s3_data_bucket_policy" {
       "${var.aws_s3_bucket.arn}/*"
     ]
   }
+
+  statement {
+    sid    = ""
+    effect = "Allow"
+
+    actions = [
+      "ssm:GetParameters",
+      "ssm:GetParameter",
+      "ssm:GetParametersByPath"
+    ]
+
+    resources = [
+      var.aws_ssm_parameter.arn
+    ]
+  }
+
+  statement {
+    sid    = ""
+    effect = "Allow"
+
+    actions = [
+      "sqs:DeleteMessage",
+      "sqs:ReceiveMessage",
+      "sqs:SendMessage"
+    ]
+
+    resources = [
+      var.aws_sqs_queue.arn
+    ]
+  }
 }
 
-resource "aws_iam_policy" "s3_policy" {
-  policy = data.aws_iam_policy_document.s3_data_bucket_policy.json
+resource "aws_iam_policy" "policy" {
+  policy = data.aws_iam_policy_document.policy.json
 }
 
-resource "aws_iam_role_policy_attachment" "ecs_role_s3_data_bucket_policy_attach" {
+resource "aws_iam_role_policy_attachment" "ecs_role_policy_attach" {
   role       = aws_iam_role.ecs_task_execution_role.name
-  policy_arn = aws_iam_policy.s3_policy.arn
+  policy_arn = aws_iam_policy.policy.arn
 }
-
 
 # allow task execution role to be assumed by ecs
 data "aws_iam_policy_document" "assume_role_policy" {

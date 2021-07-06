@@ -55,13 +55,15 @@ module "s3" {
 module "elasticache" {
   source     = "./modules/elasticache"
   stack_name = local.stack_name
+  subnet_ids = module.vpc.private_subnets.*.id
+  vpc_id     = module.vpc.vpc.id
 }
 
 module "elasticsearch" {
-  source             = "./modules/elasticsearch"
-  stack_name         = local.stack_name
-  vpc_id             = module.vpc.vpc.id
-  private_subnet_ids = module.vpc.private_subnets.*.id
+  source     = "./modules/elasticsearch"
+  stack_name = local.stack_name
+  vpc_id     = module.vpc.vpc.id
+  subnet_ids = module.vpc.private_subnets.*.id
 }
 
 module "sqs" {
@@ -101,5 +103,7 @@ module "ecs" {
   aws_sqs_queue           = module.sqs.aws_sqs_queue
   aws_elasticache_cluster = module.elasticache.aws_elasticache_cluster
 
-  // TODO Redis params
+  aws_ssm_parameter = module.ssm.aws_ssm_parameter
+
+  aws_elasticsearch_domain = module.elasticsearch.aws_elasticsearch_domain
 }

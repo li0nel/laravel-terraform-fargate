@@ -76,6 +76,7 @@ variable "aws_rds_cluster" {
 variable "aws_sqs_queue" {
   type = object({
     name = string
+    arn  = string
   })
 }
 
@@ -88,3 +89,14 @@ variable "aws_elasticache_cluster" {
   })
 }
 
+variable "aws_ssm_parameter" {
+  type = object({
+    arn = string
+  })
+}
+
+variable "aws_elasticsearch_domain" {
+  type = object({
+    endpoint = string
+  })
+}
