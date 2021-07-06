@@ -144,13 +144,13 @@ You will need the below environment variables in your CI/CD project to redeploy 
 
 ## 4. Test your infrastructure code
 
-// Test Laravel is up DONE
-// Test Laravel workers are running -> test workers are picking jobs from SQS ; worker trying to connect to Redis??
-// Test Laravel scheduler is running -> test scheduler is posting new jobs to SQS TODO
-// Test Laravel can reach S3 -> test upload S3 object DONE
-// Test Laravel can reach MySQL -> migrations are running on container boot DONE
-// Test Laravel can reach Redis -> test Cache facade TIMEOUT
-// Test Laravel can reach ElasticSearch -> test simple ES query TODO
-// Test Laravel can reach SQS -> test by posting jobs to SQS TODO
-// Test Laravel can be passed SSM secrets -> test secrets are passed as env vars 403 ERROR
-// Test Laravel front-end autoscaling
+- Test Laravel is up DONE
+- Test Laravel workers are running -> test workers are picking jobs from SQS ; worker trying to connect to Redis?? :warning:
+- Test Laravel scheduler is running -> test scheduler is posting new jobs to SQS TODO
+- Test Laravel can reach S3 -> test upload S3 object DONE
+- Test Laravel can reach MySQL -> migrations are running on container boot DONE
+- Test Laravel can reach Redis -> test Cache facade TIMEOUT :warning:
+- Test Laravel can reach ElasticSearch -> test simple ES query TODO
+- Test Laravel can reach SQS -> test by posting jobs to SQS TODO
+- Test Laravel can be passed SSM secrets -> test secrets are passed as env vars 403 ERROR :warning:
+- Test Laravel front-end autoscaling
