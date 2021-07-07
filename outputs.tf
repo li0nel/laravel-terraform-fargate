@@ -55,3 +55,8 @@ output "elasticsearch" {
 output "sqs" {
   value = module.sqs
 }
+
+output "ssm" {
+  value = module.ssm
+  sensitive = true
+}

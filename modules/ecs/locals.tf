@@ -1,26 +1,8 @@
 locals {
-  task_definition_template = {
-    log_group                  = aws_cloudwatch_log_group.logs.name
-    aws_region                 = data.aws_region.current.name
-    ecr_laravel_repository_uri = var.ecr_laravel_repository_uri
-    ecr_nginx_repository_uri   = var.ecr_nginx_repository_uri
-    secrets = {
-      SSM_SECRET = var.aws_ssm_parameter.arn
-    }
-    // in template:
-    //     "secrets": [
-    // %{ for key, value in secrets ~}
-    //       {
-    //         "name": "${key}",
-    //         "valueFrom": "${value}"
-    //       },
-    // %{ endfor ~}
-    //       {
-    //         "name": "dummy_other",
-    //         "valueFrom": "env_var"
-    //       }    
-    //     ],
-    env_vars = {
+  secrets = {
+    SSM_SECRET = var.aws_ssm_parameter.arn
+  }
+  environment = {
       LOG_CHANNEL = "stderr"
       APP_DEBUG   = true
       APP_URL     = "http://${aws_alb.main.dns_name}"
@@ -49,6 +31,19 @@ locals {
       ELASTICSEARCH_HOST   = var.aws_elasticsearch_domain.endpoint
       ELASTICSEARCH_PORT   = 443
       ELASTICSEARCH_SCHEME = "https"
-    }
+  }
+  task_definition_template = {
+    log_group                  = aws_cloudwatch_log_group.logs.name
+    aws_region                 = data.aws_region.current.name
+    ecr_laravel_repository_uri = var.ecr_laravel_repository_uri
+    ecr_nginx_repository_uri   = var.ecr_nginx_repository_uri
+    secrets = jsonencode([for key, value in local.secrets: {
+      name: key,
+      valueFrom: tostring(value)
+    }])
+    environment = jsonencode([for key, value in local.environment: {
+      name: key,
+      value: tostring(value)
+    }])
   }
 }

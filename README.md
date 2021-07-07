@@ -151,5 +151,5 @@ You will need the below environment variables in your CI/CD project to redeploy 
 - Test Laravel can reach Redis -> Elasticache DONE :thumbsup:
 - Test Laravel can reach ElasticSearch -> ElasticSearch DONE :thumbsup:
 - Test Laravel can reach SQS -> test SQS (scheduler/worker logs) DONE :thumbsup:
-- Test Laravel can be passed SSM secrets -> test secrets are passed as env vars 403 ERROR :warning:
+- Test Laravel can be passed SSM secrets -> test SSM secrets are passed as env vars :thumbsup:
 - Test Laravel front-end autoscaling -> out of scope

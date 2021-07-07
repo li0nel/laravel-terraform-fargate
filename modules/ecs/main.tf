@@ -134,9 +134,10 @@ data "aws_iam_policy_document" "policy" {
       "ssm:GetParametersByPath"
     ]
 
-    resources = [
-      var.aws_ssm_parameter.arn
-    ]
+    resources = ["*"]
+    # resources = [
+    #   "${var.aws_ssm_parameter.arn}/"
+    # ]
   }
 
   statement {
@@ -189,7 +190,7 @@ resource "aws_ecs_task_definition" "app" {
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   task_role_arn            = aws_iam_role.ecs_task_execution_role.arn
 
-  container_definitions = templatefile("${path.module}/task-definitions.json", local.task_definition_template)
+  container_definitions = templatefile("${path.module}/task-definitions.tmpl", local.task_definition_template)
 }
 
 resource "aws_cloudwatch_log_group" "logs" {
@@ -235,7 +236,7 @@ resource "aws_ecs_task_definition" "worker" {
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   task_role_arn            = aws_iam_role.ecs_task_execution_role.arn
 
-  container_definitions = templatefile("${path.module}/task-definitions-workers.json", local.task_definition_template)
+  container_definitions = templatefile("${path.module}/task-definitions-workers.tmpl", local.task_definition_template)
 }
 
 resource "aws_ecs_service" "worker" {
@@ -268,7 +269,7 @@ resource "aws_ecs_task_definition" "cron" {
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   task_role_arn            = aws_iam_role.ecs_task_execution_role.arn
 
-  container_definitions = templatefile("${path.module}/task-definitions-cron.json", local.task_definition_template)
+  container_definitions = templatefile("${path.module}/task-definitions-cron.tmpl", local.task_definition_template)
 }
 
 resource "aws_ecs_service" "cron" {

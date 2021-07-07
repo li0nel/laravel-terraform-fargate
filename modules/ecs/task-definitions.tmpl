@@ -33,17 +33,7 @@
         "awslogs-stream-prefix": "laravel"
       }
     },
-    "environment": [
-%{ for key, value in env_vars ~}
-      {
-        "name": "${key}",
-        "value": "${value}"
-      },
-%{ endfor ~}
-      {
-        "name": "dummy",
-        "value": "env_var"
-      }    
-    ]  
+    "secrets": ${secrets},
+    "environment": ${environment}
   }
 ]
