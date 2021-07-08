@@ -107,22 +107,17 @@ docker pull li0nel/nginx && docker tag li0nel/nginx $(terraform output -json | j
 Coming soon: replace with [VPN setup](https://aws.amazon.com/blogs/networking-and-content-delivery/introducing-aws-client-vpn-to-securely-access-aws-and-on-premises-resources/) + [AWS System Manager Session Manager](https://aws.amazon.com/blogs/aws/new-port-forwarding-using-aws-system-manager-sessions-manager/)
 
 ```
-aws ec2 run-instances --image-id $(terraform output ec2_ami_id) --count 1 --instance-type t2.micro --key-name $(terraform output ec2_key_name) --security-group-ids $(terraform output ec2_security_group_id) --subnet-id $(terraform output ec2_public_subnet_id) --associate-public-ip-address | grep InstanceId
-
-aws ec2 describe-instances --instance-ids xxxx | grep PublicIpAddress
+ssh ubuntu@$(terraform output -json | jq '.ec2_ip' | tr -d '"') -i $(terraform output -json | jq '.ssh_key_path' | tr -d '"')
 ```
 
+or for a SSH tunnel on MySQL:
 ```
-ssh ubuntu@xxxxx -i $(terraform output ec2_ssh_key_path) -L 3306:$(terraform output aurora_endpoint):3306
+ssh ubuntu@$(terraform output -json | jq '.ec2_ip' | tr -d '"') -i $(terraform output -json | jq '.ssh_key_path' | tr -d '"') -L 3306:$(terraform output -json | jq '.aurora.aws_rds_cluster.endpoint' | tr -d '"'):3306
 ```
   
 Then connect using your favourite MySQL client
 ```
-mysql -u$(terraform output aurora_db_username) -p$(terraform output aurora_master_password) -h 127.0.0.1 -D $(terraform output aurora_db_name)
-```
-
-```
-aws ec2 terminate-instances --instance-ids xxxx
+mysql -u$(terraform output -json | jq '.aurora.aws_rds_cluster.endpoint' | tr -d '"') -p$(terraform output -json | jq '.aurora.aws_rds_cluster.master_password' | tr -d '"') -h 127.0.0.1 -D $(terraform output -json | jq '.aurora.aws_rds_cluster.database_name' | tr -d '"')
 ```
 
 ## Set up your Continuous Integration/Deployment pipeline
