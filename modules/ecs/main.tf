@@ -66,37 +66,37 @@ resource "aws_alb_target_group" "app" {
   }
 }
 
-# resource "aws_alb_listener" "https" {
-#   load_balancer_arn = aws_alb.main.arn
-#   port              = 443
-#   protocol          = "HTTPS"
-#   certificate_arn   = var.certificate_arn
+resource "aws_alb_listener" "https" {
+  load_balancer_arn = aws_alb.main.arn
+  port              = 443
+  protocol          = "HTTPS"
+  certificate_arn   = var.certificate_arn
 
-#   default_action {
-#     target_group_arn = aws_alb_target_group.app.arn
-#     type             = "forward"
-#   }
-# }
+  default_action {
+    target_group_arn = aws_alb_target_group.app.arn
+    type             = "forward"
+  }
+}
 
 resource "aws_alb_listener" "http" {
   load_balancer_arn = aws_alb.main.arn
   port              = 80
   protocol          = "HTTP"
 
-  default_action {
-    target_group_arn = aws_alb_target_group.app.arn
-    type             = "forward"
-  }
-
   # default_action {
-  #   type = "redirect"
-
-  #   redirect {
-  #     port        = "443"
-  #     protocol    = "HTTPS"
-  #     status_code = "HTTP_301"
-  #   }
+  #   target_group_arn = aws_alb_target_group.app.arn
+  #   type             = "forward"
   # }
+
+  default_action {
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
 }
 
 resource "aws_ecs_cluster" "main" {
@@ -198,7 +198,10 @@ resource "aws_cloudwatch_log_group" "logs" {
 }
 
 resource "aws_ecs_service" "main" {
-  depends_on = [aws_alb_listener.http]
+  depends_on = [
+    aws_alb_listener.http,
+    aws_alb_listener.https
+  ]
 
   name            = var.stack_name
   cluster         = aws_ecs_cluster.main.id

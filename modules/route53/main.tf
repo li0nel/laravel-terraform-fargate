@@ -4,7 +4,7 @@ data "aws_route53_zone" "zone" {
 
 resource "aws_route53_record" "alias" {
   zone_id = data.aws_route53_zone.zone.zone_id
-  name    = var.hostname
+  name    = length(var.subdomain) == 0 ? var.domain : join(".", [var.subdomain, var.domain])
   type    = "A"
 
   alias {

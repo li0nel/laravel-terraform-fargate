@@ -15,6 +15,10 @@ output "iam" {
   sensitive = true
 }
 
+output "acm" {
+  value = module.acm
+}
+
 # output "route53_hosted_zone_id" {
 #   value = module.route53.hosted_zone_id
 # }
@@ -57,6 +61,6 @@ output "sqs" {
 }
 
 output "ssm" {
-  value = module.ssm
+  value     = module.ssm
   sensitive = true
 }

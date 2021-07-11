@@ -10,6 +10,7 @@ variable "domain" {
   type = string
 }
 
-variable "hostname" {
-  type = string
+variable "subdomain" {
+  type    = string
+  default = null
 }

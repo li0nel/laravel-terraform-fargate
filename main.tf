@@ -1,21 +1,23 @@
 // TODO any other subdomain should redirect to APEX
-# module "route53" {
-#   source       = "./modules/route53"
-#   domain       = var.domain
-#   hostname     = local.hostname
-#   alb_hostname = module.ecs.ecs_alb_hostname
-#   alb_zone_id  = module.ecs.ecs_alb_zone_id
+module "route53" {
+  count        = var.b_route53_zone ? 1 : 0
+  source       = "./modules/route53"
+  domain       = var.domain
+  subdomain    = var.subdomain
+  alb_hostname = module.ecs.ecs_alb_hostname
+  alb_zone_id  = module.ecs.ecs_alb_zone_id
 
-#   providers = {
-#     aws = "aws.us-east-1"
-#   }
-# }
+  providers = {
+    aws.useast1 = aws.useast1
+  }
+}
 
-# module "acm" {
-#   source         = "./modules/acm"
-#   hostname       = local.hostname
-#   hosted_zone_id = module.route53.hosted_zone_id
-# }
+module "acm" {
+  source         = "./modules/acm"
+  domain         = var.domain
+  subdomain      = var.subdomain
+  hosted_zone_id = var.b_route53_zone ? module.route53[0].hosted_zone_id : null
+}
 
 # module "cloudfront" {
 #   source         = "./modules/cloudfront"
@@ -60,10 +62,10 @@ module "elasticache" {
 }
 
 module "elasticsearch" {
-  source       = "./modules/elasticsearch"
-  stack_name   = local.stack_name
-  vpc_id       = module.vpc.vpc.id
-  subnet_ids   = module.vpc.private_subnets.*.id
+  source     = "./modules/elasticsearch"
+  stack_name = local.stack_name
+  vpc_id     = module.vpc.vpc.id
+  subnet_ids = module.vpc.private_subnets.*.id
   # aws_iam_role = module.ecs.aws_iam_role
 }
 
@@ -93,8 +95,7 @@ module "ecs" {
   public_subnet_ids  = module.vpc.public_subnets.*.id
   private_subnet_ids = module.vpc.private_subnets.*.id
   role               = module.iam.ecs_role
-  # certificate_arn            = module.acm.certificate_arn
-  # hostname                   = local.hostname
+  certificate_arn    = module.acm.certificate_arn
 
   aws_rds_cluster = module.aurora.aws_rds_cluster
   aws_s3_bucket   = module.s3.aws_s3_bucket

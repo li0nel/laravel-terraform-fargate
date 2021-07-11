@@ -87,9 +87,29 @@ export TF_VAR_project_name=$PROJECT_NAME
 terraform init -backend-config="bucket=$BUCKET_NAME"
 
 terraform apply
+```
 
-// Get your ALB URL
+Retrieve your ALB URL:
+```
 terraform output -json | jq '.ecs.value.ecs_alb_hostname' | tr -d '"'
+```
+
+This Terraform configuration expects that your domain's DNS records are managed through a hosted zone on Route53.
+If that is not the case, you will need to validate the SSL certificates by creating a DNS record with your external DNS service provider.
+You will have to first create the ACM resources, before applying the whole stack:
+
+```
+terraform apply -target="module.acm"
+
+terraform output -json | jq '.acm.value'
+
+// Create the appropriate record of the given type, with the given name and value
+
+// Wait for the certificate to be successfully issued
+aws acm wait certificate-validated --certificate-arn $(terraform output -json | jq '.acm.value.certificate_arn' | tr -d '"')
+
+// Then build the rest of the stack
+terraform apply
 ```
 
 ### Build and deploy your Docker images manually (optional - only if you don't use a CD pipeline)

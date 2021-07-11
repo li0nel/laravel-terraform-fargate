@@ -23,13 +23,9 @@ variable "role" {
   type = string
 }
 
-# variable "certificate_arn" {
-#   type = string
-# }
-
-# variable "hostname" {
-#   type = string
-# }
+variable "certificate_arn" {
+  type = string
+}
 
 variable "ecr_laravel_repository_uri" {
   type = string
