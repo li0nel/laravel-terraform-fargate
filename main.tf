@@ -110,3 +110,11 @@ module "ecs" {
 
   aws_elasticsearch_domain = module.elasticsearch.aws_elasticsearch_domain
 }
+
+module "ec2" {
+  source = "./modules/ec2"
+
+  stack_name = local.stack_name
+  vpc_id     = module.vpc.vpc.id
+  subnet_id  = module.vpc.private_subnets[0].id
+}

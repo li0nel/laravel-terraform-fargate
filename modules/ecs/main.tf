@@ -119,8 +119,10 @@ data "aws_iam_policy_document" "policy" {
     ]
 
     resources = [
-      var.aws_s3_bucket.arn,
-      "${var.aws_s3_bucket.arn}/*"
+      "*"
+      // TODO
+      # var.aws_s3_bucket.arn,
+      # "${var.aws_s3_bucket.arn}/*"
     ]
   }
 
@@ -135,9 +137,24 @@ data "aws_iam_policy_document" "policy" {
     ]
 
     resources = ["*"]
+    // TODO
     # resources = [
     #   "${var.aws_ssm_parameter.arn}/"
     # ]
+  }
+
+  statement {
+    sid    = ""
+    effect = "Allow"
+
+    actions = [
+      "ssmmessages:CreateControlChannel",
+      "ssmmessages:CreateDataChannel",
+      "ssmmessages:OpenControlChannel",
+      "ssmmessages:OpenDataChannel"
+    ]
+
+    resources = ["*"]
   }
 
   statement {
@@ -208,6 +225,7 @@ resource "aws_ecs_service" "main" {
   task_definition = aws_ecs_task_definition.app.arn
   desired_count   = var.desired_count
   launch_type     = "FARGATE"
+  enable_execute_command = true
   # health_check_grace_period_seconds = 10
 
   network_configuration {

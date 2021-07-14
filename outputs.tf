@@ -64,3 +64,7 @@ output "ssm" {
   value     = module.ssm
   sensitive = true
 }
+
+output "ec2" {
+  value = module.ec2
+}

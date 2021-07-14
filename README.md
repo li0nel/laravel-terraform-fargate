@@ -122,22 +122,49 @@ docker pull li0nel/laravel-test && docker tag li0nel/laravel-test $(terraform ou
 docker pull li0nel/nginx && docker tag li0nel/nginx $(terraform output -json | jq '.ecr.value.nginx_repository_uri' | tr -d '"') && docker push $(terraform output -json | jq '.ecr.value.nginx_repository_uri' | tr -d '"')
 ```
 
-### SSH tunnelling into the database through the EC2 bastion (optional - only to access the database manually)
+### Bastion setup
 
-Coming soon: replace with [VPN setup](https://aws.amazon.com/blogs/networking-and-content-delivery/introducing-aws-client-vpn-to-securely-access-aws-and-on-premises-resources/) + [AWS System Manager Session Manager](https://aws.amazon.com/blogs/aws/new-port-forwarding-using-aws-system-manager-sessions-manager/)
+Coming soon: [VPN setup](https://aws.amazon.com/blogs/networking-and-content-delivery/introducing-aws-client-vpn-to-securely-access-aws-and-on-premises-resources/)
 
-```
-ssh ubuntu@$(terraform output -json | jq '.ec2_ip' | tr -d '"') -i $(terraform output -json | jq '.ssh_key_path' | tr -d '"')
+The bastion is placed in a public subnet but with all ports closed, using [AWS System Manager Session Manager](https://aws.amazon.com/blogs/aws/new-port-forwarding-using-aws-system-manager-sessions-manager/). Add the below to your `~/.ssh/config` file:
+
+```txt
+> SSH over Session Manager 
+host i-* mi-*     
+ProxyCommand sh -c "aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters 'portNumber=%p'"
 ```
 
-or for a SSH tunnel on MySQL:
+then
 ```
-ssh ubuntu@$(terraform output -json | jq '.ec2_ip' | tr -d '"') -i $(terraform output -json | jq '.ssh_key_path' | tr -d '"') -L 3306:$(terraform output -json | jq '.aurora.aws_rds_cluster.endpoint' | tr -d '"'):3306
+ssh ec2-user@$(terraform output -json | jq '.ec2.value.instance_id' | tr -d '"') -i $(terraform output -json | jq '.ec2.value.ssh_key_path' | tr -d '"')
 ```
-  
+
+You can also SSH or run a command inside your Fargate container, even with port 22 being closed:
+```
+aws ecs execute-command \
+    --region $(terraform output -json | jq '.region.value' | tr -d '"') \
+    --cluster $(terraform output -json | jq '.stack_name.value' | tr -d '"') \
+    --task $(aws ecs list-tasks --cluster $(terraform output -json | jq '.stack_name.value' | tr -d '"') --service-name laravel | jq -r ".taskArns[0]" | tr -d '"' | sed 's/arn:aws:ecs:[^:]*:[0-9]*:task\/[[:alnum:]_-]*\/\([[:alnum:]_-]*\)/\1/') \
+    --container laravel \
+    --command "/bin/sh" \
+    --interactive
+```
+
+Finally, use the below to setup an SSH tunnel with the RDS database:
+```
+ssh -nNT -L 3306:$(terraform output -json | jq '.aurora.value.aws_rds_cluster.endpoint' | tr -d '"'):3306 ec2-user@$(terraform output -json | jq '.ec2.value.instance_id' | tr -d '"') -i $(terraform output -json | jq '.ec2.value.ssh_key_path' | tr -d '"')
+```
+
 Then connect using your favourite MySQL client
 ```
-mysql -u$(terraform output -json | jq '.aurora.aws_rds_cluster.endpoint' | tr -d '"') -p$(terraform output -json | jq '.aurora.aws_rds_cluster.master_password' | tr -d '"') -h 127.0.0.1 -D $(terraform output -json | jq '.aurora.aws_rds_cluster.database_name' | tr -d '"')
+mysql -u$(terraform output -json | jq '.aurora.value.aws_rds_cluster.master_username' | tr -d '"') -p$(terraform output -json | jq '.aurora.value.aws_rds_cluster.master_password' | tr -d '"') -h 127.0.0.1 -D $(terraform output -json | jq '.aurora.value.aws_rds_cluster.database_name' | tr -d '"')
+```
+
+### Log into Fargate containers
+
+At any time, you might want to run a command inside your Fargate container, using:
+```
+aws ecs execute-command --cluster $() --container app --task $() --command "/bin/sh" --interactive
 ```
 
 ## Set up your Continuous Integration/Deployment pipeline
