@@ -1,7 +1,17 @@
 data "aws_region" "current" {}
 
+data "aws_ami" "awslinux2" {
+  owners      = ["amazon"]
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm-*-x86_64-ebs"]
+  }
+}
+
 resource "aws_instance" "vm" {
-  ami                         = "ami-091aa67fccd794d5f"
+  ami                         = data.aws_ami.awslinux2.id
   instance_type               = "t2.nano"
   associate_public_ip_address = false
   key_name                    = aws_key_pair.generated.key_name
@@ -28,7 +38,7 @@ resource "aws_iam_instance_profile" "vm_profile" {
 }
 
 resource "aws_iam_role" "role" {
-  name = "ec2_role_${var.stack_name}"
+  name               = "ec2_role_${var.stack_name}"
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 }
 
