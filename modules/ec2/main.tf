@@ -38,7 +38,7 @@ data "aws_iam_policy_document" "policy" {
     effect = "Allow"
 
     actions = [
-      "s3:*"
+      "s3:GetEncryptionConfiguration"
     ]
 
     resources = [
@@ -51,20 +51,11 @@ data "aws_iam_policy_document" "policy" {
     effect = "Allow"
 
     actions = [
-      "ssm:*",
-      "ssmmessages:*"
-    ]
-
-    resources = ["*"]
-  }
-
-  statement {
-    sid    = ""
-    effect = "Allow"
-
-    actions = [
-      "cloudwatch:*",
-      "logs:*"
+      "ssmmessages:CreateControlChannel",
+      "ssmmessages:CreateDataChannel",
+      "ssmmessages:OpenControlChannel",
+      "ssmmessages:OpenDataChannel",
+      "ssm:UpdateInstanceInformation"
     ]
 
     resources = ["*"]
